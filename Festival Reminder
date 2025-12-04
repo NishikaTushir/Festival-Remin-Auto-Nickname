@@ -1,0 +1,111 @@
+import datetime
+import json
+import os
+
+# ---------- Helper Functions ----------
+
+def load_festivals():
+    """Load saved festivals from a JSON file if it exists."""
+    if os.path.exists("festivals.json"):
+        with open("festivals.json", "r") as f:
+            return json.load(f)
+    return []
+
+def save_festivals(festivals):
+    """Save festivals to a JSON file."""
+    with open("festivals.json", "w") as f:
+        json.dump(festivals, f, indent=4)
+
+def display_festivals(festivals):
+    """Display all saved festivals sorted by date."""
+    if not festivals:
+        print("\nNo festivals saved yet.")
+        return
+    sorted_fests = sorted(festivals, key=lambda x: x["date"])
+    print("\n📅 Saved Festivals:")
+    for fest in sorted_fests:
+        print(f"→ {fest['name']} on {fest['date']}")
+    print()
+
+def add_festival(festivals):
+    """Add a new festival with name and date."""
+    name = input("Enter festival name: ").strip().title()
+    date_str = input("Enter festival date (YYYY-MM-DD): ").strip()
+
+    try:
+        datetime.datetime.strptime(date_str, "%Y-%m-%d")
+    except ValueError:
+        print("❌ Invalid date format! Please use YYYY-MM-DD.")
+        return
+
+    festivals.append({"name": name, "date": date_str})
+    save_festivals(festivals)
+    print(f"✅ {name} added successfully!\n")
+
+def delete_festival(festivals):
+    """Delete a festival by name."""
+    name = input("Enter the name of the festival to delete: ").strip().title()
+    for fest in festivals:
+        if fest["name"] == name:
+            festivals.remove(fest)
+            save_festivals(festivals)
+            print(f"🗑️ {name} deleted successfully!\n")
+            return
+    print("❌ Festival not found!\n")
+
+def check_reminders(festivals):
+    """Check for today's or upcoming festivals."""
+    if not festivals:
+        print("No festivals saved.")
+        return
+
+    today = datetime.date.today()
+    upcoming = []
+
+    for fest in festivals:
+        fest_date = datetime.datetime.strptime(fest["date"], "%Y-%m-%d").date()
+        diff = (fest_date - today).days
+
+        if diff == 0:
+            print(f"🎉 TODAY is {fest['name']}!")
+        elif 0 < diff <= 7:
+            upcoming.append((fest['name'], fest_date.strftime("%Y-%m-%d"), diff))
+
+    if upcoming:
+        print("\n🗓️ Festivals within the next 7 days:")
+        for name, date, days in upcoming:
+            print(f"→ {name} in {days} days ({date})")
+    elif not upcoming:
+        print("No upcoming festivals within the next 7 days.\n")
+
+# ---------- Main Bot ----------
+def main():
+    festivals = load_festivals()
+
+    while True:
+        print("\n✨ FESTIVAL REMINDER BOT ✨")
+        print("1. View all festivals")
+        print("2. Add a festival")
+        print("3. Delete a festival")
+        print("4. Check reminders")
+        print("5. Exit")
+
+        choice = input("Enter your choice (1-5): ").strip()
+
+        if choice == "1":
+            display_festivals(festivals)
+        elif choice == "2":
+            add_festival(festivals)
+        elif choice == "3":
+            delete_festival(festivals)
+        elif choice == "4":
+            check_reminders(festivals)
+        elif choice == "5":
+            print("👋 Exiting Festival Reminder Bot. Have a great day!")
+            break
+        else:
+            print("❌ Invalid choice! Please enter a number from 1-5.\n")
+
+# ---------- Run the Bot ----------
+if __name__ == "__main__":
+    main()
