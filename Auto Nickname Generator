@@ -1,0 +1,37 @@
+# Auto Nickname Combiner
+# Internship Project - Core Features Only
+
+def combine_names(name1, name2):
+    """
+    Combines first two letters of name1 and last two letters of name2.
+    Example: Amit + Priya -> Amya
+    """
+    part1 = name1[:2] if len(name1) >= 2 else name1
+    part2 = name2[-2:] if len(name2) >= 2 else name2
+    nickname = part1 + part2
+    return nickname.capitalize()
+
+def main():
+    print("=== Auto Nickname Combiner ===")
+    print("Generate fun nicknames from two names!\n")
+
+    while True:
+        # Step 1: Take two names as input
+        name1 = input("Enter the first name: ").strip()
+        name2 = input("Enter the second name: ").strip()
+
+        # Step 2: Generate nickname
+        nickname = combine_names(name1, name2)
+
+        # Step 3: Display nickname
+        print(f"\n✨ Generated Nickname: {nickname}\n")
+
+        # Step 4: Ask if user wants to continue
+        again = input("Do you want to create another nickname? (yes/no): ").lower()
+        if again != "yes":
+            print("\nThanks for using Auto Nickname Combiner! 👋")
+            break
+
+# Run the program
+if __name__ == "__main__":
+    main()
